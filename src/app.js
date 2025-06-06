@@ -19,7 +19,13 @@ app.get("/user/login", (req, res) => {
 }); //for login not required auth
 
 app.get("/user/list", userAuth, (req, res) => {
+  throw "error";
   res.send("user list");
+});
+
+app.use("/", (err, req, res, next) => {
+  //error will be first parameter if we have 4 params, if we have 2, then only req, res ,if we have 3 then req,res and next
+  res.status(500).send("Something went wrong!!");
 });
 
 app.listen(7777, () => {
