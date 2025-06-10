@@ -1,33 +1,73 @@
 const express = require("express");
-
-const { adminAuth, userAuth } = require("./middleware/auth");
-
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-app.use("/admin", adminAuth);
+app.use(express.json());
 
-app.get("/admin/list", (req, res) => {
-  res.send("sending list");
+app.post("/signup", async (req, res) => {
+  const user = new User(req.body);
+
+  try {
+    await user.save();
+    res.send("User added successfully");
+  } catch (error) {
+    res.status(400).send("error while saving" + error);
+  }
 });
 
-app.post("/admin/list", (req, res) => {
-  res.send("added list");
+app.get("/user", async (req, res) => {
+  try {
+    const userEmail = req.body.emailId;
+    const user = await User.find({ emailId: userEmail });
+    if (user.length === 0) {
+      res.status(400).send("No user found");
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Something went wrong " + error);
+  }
 });
 
-app.get("/user/login", (req, res) => {
-  res.send("login page");
-}); //for login not required auth
-
-app.get("/user/list", userAuth, (req, res) => {
-  throw "error";
-  res.send("user list");
+app.delete("/user", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findByIdAndDelete(userId);
+    res.send("User deleted successfully!");
+  } catch (error) {
+    res.status(500).send("Something went wrong " + error);
+  }
 });
 
-app.use("/", (err, req, res, next) => {
-  //error will be first parameter if we have 4 params, if we have 2, then only req, res ,if we have 3 then req,res and next
-  res.status(500).send("Something went wrong!!");
+app.patch("/user", async (req, res) => {
+  try {
+    const data = req.body;
+    const userId = req.body.userId;
+    const user = await User.findByIdAndUpdate(userId, data, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    console.log(user);
+    res.send("User updated Successfully!");
+  } catch (error) {
+    res.status(500).send("Update failed: " + error);
+  }
 });
 
-app.listen(7777, () => {
-  console.log("Server is running on port 3000");
+app.get("/feed", async (req, res) => {
+  try {
+    const user = await User.find({});
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Something went wrong" + error);
+  }
 });
+
+connectDB()
+  .then(() => {
+    console.log("Database connection established");
+    app.listen(7777, () => {
+      console.log("Server is running on port 3000");
+    });
+  })
+  .catch((err) => console.log("DB cannot be connected", err));
