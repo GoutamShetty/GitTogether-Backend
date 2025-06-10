@@ -30,6 +30,28 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+
+    const user = await User.findOne({ emailId });
+
+    if (!user) {
+      throw new Error("Invalid credential");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log(isPasswordValid, password, user);
+    if (isPasswordValid) {
+      res.send("Login Successful!");
+    } else {
+      throw new Error("Invalid credential");
+    }
+  } catch (error) {
+    res.status(400).send("error while login" + error);
+  }
+});
+
 app.get("/user", async (req, res) => {
   try {
     const userEmail = req.body.emailId;
@@ -46,7 +68,7 @@ app.get("/user", async (req, res) => {
 app.delete("/user", async (req, res) => {
   try {
     const userId = req.body.userId;
-    const user = await User.findByIdAndDelete(userId);
+    await User.findByIdAndDelete(userId);
     res.send("User deleted successfully!");
   } catch (error) {
     res.status(500).send("Something went wrong " + error);
