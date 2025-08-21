@@ -56,7 +56,6 @@ requestRouter.post(
         "A new frnd req from " + req.user.firstName,
         req.user.firstName + status + toUser.firstName
       );
-      console.log(emailRes);
 
       res.json({
         message: req.user.firstName + status + toUser.firstName,

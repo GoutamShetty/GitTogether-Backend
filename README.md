@@ -200,7 +200,6 @@ src/
 
 - `POST /payment/create` - Initialize premium upgrade
 - `POST /payment/verify` - Confirm payment
-- `GET /payment/history` - View payment history
 
 ## 🔌 WebSocket Events
 
@@ -208,13 +207,10 @@ src/
 
 - `join` - Join chat room
 - `message` - Send message
-- `typing` - Developer typing indicator
 
 ### Server -> Client
 
 - `message` - Receive message
-- `typing` - Receive typing indicator
-- `online` - Developer online status
 
 ## 🔐 Security Features
 
@@ -240,7 +236,7 @@ This project is licensed under the ISC License.
 
 ## 👤 Author
 
-Goutam
+Goutam Shetty
 
 ## 🙏 Acknowledgments
 
